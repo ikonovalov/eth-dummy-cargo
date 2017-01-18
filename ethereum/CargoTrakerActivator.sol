@@ -10,7 +10,7 @@ contract CargoTrackRequester {
 
 contract CargoTrackerActivator is CargoTrackerService {
 
-    uint32 public constant version = 5;
+    uint32 public constant version = 7;
 
     address public owner;
 
@@ -55,6 +55,7 @@ contract CargoTrackerActivator is CargoTrackerService {
     mapping(string => TrackingRequest) internal trackingRequests;
     uint256 public trackingRequestsCount = 0;
 
+    // frequency - minutes
     function createTrackingRequest(string trackNumber, string carrier, uint128 frequency, uint128 maxReps) external payable costs(maxReps * 1 ether) {
         TrackingRequest req = trackingRequests[trackNumber];
         if (req.status == TrackingStatus.NOT_EXISTS) {
@@ -79,6 +80,23 @@ contract CargoTrackerActivator is CargoTrackerService {
 
     function getRequestorsFromTrack(string trackNumber) constant returns (address[]) {
         return trackingRequests[trackNumber].requestors;
+    }
+
+    function getTrackRequest(string trackNumber) constant returns(
+                    string carrier,
+                    uint128 frequency,
+                    uint128 maxRetr,
+                    uint status,
+                    address[] requestors
+    ) {
+        TrackingRequest req = trackingRequests[trackNumber];
+        if (req.status != TrackingStatus.NOT_EXISTS) {
+            carrier = req.carrier;
+            frequency = req.frequency;
+            maxRetr = req.maxReps;
+            status = uint(req.status);
+            requestors = req.requestors;
+        }
     }
 
 }
