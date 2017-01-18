@@ -90,9 +90,8 @@ console.log(`RPCService provider set to ${eth_rpc}`);
 let trackerContract = web3.eth.contract(abi).at(location);
 
 module.exports = {
-        abi: abi,
-        location: location,
-        contract: trackerContract,
-        version: trackerContract.version().toNumber()
+    abi: abi,
+    location: location,
+    contract: trackerContract,
+    version: trackerContract.version().toNumber()
 };
-
