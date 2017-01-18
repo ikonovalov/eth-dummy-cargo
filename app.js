@@ -5,10 +5,12 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+const ethCargoTracker = require('./ethereum/eth-cargo-tracker');
+
 const NeDB = require('nedb')
 const tracksDb = new NeDB({filename: path.join(__dirname, 'db/tracks.nedb'), autoload: true});
 
-const cargoService = require('./app/cargo-track-service')(tracksDb);
+const cargoService = require('./app/cargo-track-service')(tracksDb, ethCargoTracker);
 
 const index = require('./routes/index');
 const lookup = require('./routes/lookup')(cargoService);

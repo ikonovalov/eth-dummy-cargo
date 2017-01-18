@@ -4,8 +4,9 @@
 
 class CargoTrackService {
 
-    constructor(db) {
+    constructor(db, trackContract) {
         this.db = db;
+        this.ethCargoTracker = trackContract;
     }
 
     lookupCurrentLocation(trackNumber) {
@@ -18,6 +19,6 @@ class CargoTrackService {
 
 }
 
-module.exports = function(db) {
-    return new CargoTrackService(db)
+module.exports = function(db, trackContract) {
+    return new CargoTrackService(db, trackContract)
 };
