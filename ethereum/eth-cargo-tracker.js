@@ -88,10 +88,12 @@ web3.setProvider(new web3.providers.HttpProvider(eth_rpc));
 console.log(`RPCService provider set to ${eth_rpc}`);
 
 let trackerContract = web3.eth.contract(abi).at(location);
+let trackServiceVersion = trackerContract.version().toNumber();
+console.log(`TrackService on "${location}" has version: ${trackServiceVersion}`)
 
 module.exports = {
     abi: abi,
     location: location,
     contract: trackerContract,
-    version: trackerContract.version().toNumber()
+    version: trackServiceVersion
 };

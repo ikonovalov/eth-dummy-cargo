@@ -10,39 +10,38 @@ const ethCargoTracker = require('./ethereum/eth-cargo-tracker');
 const NeDB = require('nedb')
 const tracksDb = new NeDB({filename: path.join(__dirname, 'db/tracks.nedb'), autoload: true});
 
-const cargoService = require('./app/cargo-track-service')(tracksDb, ethCargoTracker);
+const CargoTrackerService = require('./app/cargo-track-service');
+const cargoService = new CargoTrackerService(tracksDb, ethCargoTracker);
 
-const index = require('./routes/index');
-const lookup = require('./routes/lookup')(cargoService);
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+const lookup = require('./routes/track-rt')(cargoService);
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
+app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/lookup', lookup);
+app.use('/track', lookup);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
-    next(err);
+    res.status(404).send(err);
 });
 
-// error handler
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-});
+// ===========================
+// var doc = {
+//     tn: 'RU0001CN',
+//     trk_idx: 0,
+//     location: 'VLADIVOSTOK',
+//     carrier: 'RZD'
+// };
+//
+// tracksDb.insert(doc, function (err, newDoc) {
+//     console.log(newDoc);
+// });
+
+// ===========================
 
 module.exports = app;

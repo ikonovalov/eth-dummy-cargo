@@ -9,16 +9,15 @@ class CargoTrackService {
         this.ethCargoTracker = trackContract;
     }
 
-    lookupCurrentLocation(trackNumber) {
-        return {
-            locationName: 'RU/Moscow',
-            latitude: '55.755833',
-            longitude: '37.617778'
-        }
+    lookupCurrentLocation(trackNumber, cb) {
+        this.db.findOne({_id: trackNumber}, cb)
+    }
+
+    updateTrack(trackNumber, info, cb) {
+        info._id = trackNumber;
+        this.db.update({_id: trackNumber}, info, {upsert: true}, cb);
     }
 
 }
 
-module.exports = function(db, trackContract) {
-    return new CargoTrackService(db, trackContract)
-};
+module.exports = CargoTrackService;
