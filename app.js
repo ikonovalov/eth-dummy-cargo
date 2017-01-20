@@ -1,21 +1,22 @@
 const express = require('express');
 const path = require('path');
-const logger = require('morgan');
+const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
 const app = express();
 
 const ethCargoTracker = require('./ethereum/eth-cargo-tracker');
 
-const NeDB = require('nedb')
+const NeDB = require('nedb');
 const tracksDb = new NeDB({filename: path.join(__dirname, 'db/tracks.nedb'), autoload: true});
+const requestsDb = new NeDB({filename: path.join(__dirname, 'db/requests.nedb'), autoload: true});
 
 const CargoTrackerService = require('./app/cargo-track-service');
 const cargoService = new CargoTrackerService(tracksDb, ethCargoTracker);
 
 const lookup = require('./routes/track-rt')(cargoService);
 
-app.use(logger('dev'));
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.urlencoded({extended: false}));

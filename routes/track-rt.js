@@ -4,16 +4,30 @@
 const express = require('express');
 const router = express.Router();
 
+/*
+    {
+        "location":
+    }
+
+ */
+
 module.exports = function (cargoService) {
 
     router.get('/:trackNumber', (req, res) => {
         let trackNumber = req.params.trackNumber;
         cargoService.lookupCurrentLocation(trackNumber, (err, track) => {
-            if (!err)
+            if (!err && track)
                 res.send(track);
+            else if (!err && !track)
+                res.status(404).send(`TrackNumber ${trackNumber} not found`);
             else
                 res.status(500).send(err.getMessage());
         });
+
+    });
+
+    router.post('/:trackNumber', (req, res) => {
+        let trackNumber = req.params.trackNumber;
 
     });
 
