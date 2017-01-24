@@ -4,13 +4,22 @@
 
 class CargoTrackService {
 
-    constructor(db, trackContract) {
+    constructor(db) {
         this.db = db;
-        this.ethCargoTracker = trackContract;
     }
 
     lookupCurrentLocation(trackNumber, cb) {
         this.db.findOne({_id: trackNumber}, cb)
+    }
+
+    newTrack(trackNumber) {
+        this.updateTrack(trackNumber, {
+            _id: trackNumber,
+            locationName: 'RU/VLADIVOSTOK',
+            startLocation: 'RU/VLADIVOSTOK',
+            endLocation: 'RU/MOSKVA',
+            complete: false
+        })
     }
 
     updateTrack(trackNumber, info, cb) {
