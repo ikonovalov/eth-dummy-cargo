@@ -20,21 +20,6 @@ contract CargoTrackerActivator is CargoTrackerService {
         }
     }
 
-    modifier onlyOperator() {
-        if (msg.sender != owner)
-            throw;
-        _;
-    }
-
-    modifier costs(uint _amount) {
-        if (msg.value < _amount)
-            throw;
-        _;
-        if (msg.value > _amount && msg.sender.send(msg.value - _amount)) {
-                cash += _amount;
-        }
-    }
-
     enum TrackingStatus {
         NOT_EXISTS, /* means not exist/registred */
         UNDER_TRACKING,         // on going
@@ -52,6 +37,8 @@ contract CargoTrackerActivator is CargoTrackerService {
         TrackingStatus status;
         address[] requestors;
     }
+
+    event NewTrackingRequest(string trackNumber);
 
     // trackNumber to request
     mapping(string => TrackingRequest) internal trackingRequests;
@@ -75,6 +62,7 @@ contract CargoTrackerActivator is CargoTrackerService {
             );
             trackingRequests[trackNumber].status = TrackingStatus.UNDER_TRACKING;
             trackingRequestsCount++;
+            NewTrackingRequest(trackNumber);
         } else {
             req.requestors.push(msg.sender);
             req.status = TrackingStatus.UNDER_SO_TRACKING;
@@ -94,7 +82,7 @@ contract CargoTrackerActivator is CargoTrackerService {
         }
     }
 
-    // it can be done externally by oracle
+    // it can be done externally by oracle (call requestors directly)
     function updateTrackForRequestor(string trackNumber, string info) onlyOperator {
         TrackingRequest req = trackingRequests[trackNumber];
         for (uint i = 0; i < req.requestors.length; i++) {
@@ -106,7 +94,7 @@ contract CargoTrackerActivator is CargoTrackerService {
         return trackingRequests[trackNumber].requestors;
     }
 
-    function getTrackRequest(string trackNumber) constant returns(
+    function getTrackingRequest(string trackNumber) constant returns(
                     string carrier,
                     uint128 frequency,
                     uint128 maxRetries,
@@ -120,6 +108,22 @@ contract CargoTrackerActivator is CargoTrackerService {
             maxRetries = req.maxRetries;
             status = uint(req.status);
             requestors = req.requestors;
+        }
+    }
+
+    // support functions ==============================
+    modifier onlyOperator() {
+        if (msg.sender != owner)
+            throw;
+        _;
+    }
+
+    modifier costs(uint _amount) {
+        if (msg.value < _amount)
+            throw;
+        _;
+        if (msg.value > _amount && msg.sender.send(msg.value - _amount)) {
+                cash += _amount;
         }
     }
 
