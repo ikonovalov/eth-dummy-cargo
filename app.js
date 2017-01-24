@@ -9,7 +9,6 @@ const ethCargoTracker = require('./ethereum/eth-cargo-tracker');
 
 const NeDB = require('nedb');
 const tracksDb = new NeDB({filename: path.join(__dirname, 'db/tracks.nedb'), autoload: true});
-const requestsDb = new NeDB({filename: path.join(__dirname, 'db/requests.nedb'), autoload: true});
 
 const CargoTrackerService = require('./app/cargo-track-service');
 const cargoService = new CargoTrackerService(tracksDb, ethCargoTracker);
@@ -29,20 +28,5 @@ app.use(function (req, res, next) {
     err.status = 404;
     res.status(404).send(err);
 });
-
-
-// ===========================
-// var doc = {
-//     tn: 'RU0001CN',
-//     trk_idx: 0,
-//     location: 'VLADIVOSTOK',
-//     carrier: 'RZD'
-// };
-//
-// tracksDb.insert(doc, function (err, newDoc) {
-//     console.log(newDoc);
-// });
-
-// ===========================
 
 module.exports = app;
